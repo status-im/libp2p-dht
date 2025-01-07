@@ -236,18 +236,18 @@ proc getNode*(d: Protocol, id: NodeId): Option[Node] =
   ## Get the node with id from the routing table.
   d.routingTable.getNode(id)
 
-proc randomNodes*(d: Protocol, maxAmount: int): seq[Node] =
+proc randomNodes*(d: Protocol, maxAmount: int): seq[Node] {.raises: Exception.} =
   ## Get a `maxAmount` of random nodes from the local routing table.
   d.routingTable.randomNodes(maxAmount)
 
 proc randomNodes*(d: Protocol, maxAmount: int,
-    pred: proc(x: Node): bool {.gcsafe, noSideEffect.}): seq[Node] =
+    pred: proc(x: Node): bool {.gcsafe, noSideEffect.}): seq[Node] {.raises: Exception.} =
   ## Get a `maxAmount` of random nodes from the local routing table with the
   ## `pred` predicate function applied as filter on the nodes selected.
   d.routingTable.randomNodes(maxAmount, pred)
 
 proc randomNodes*(d: Protocol, maxAmount: int,
-  enrField: (string, seq[byte])): seq[Node] =
+  enrField: (string, seq[byte])): seq[Node]  {.raises: Exception.} =
   ## Get a `maxAmount` of random nodes from the local routing table. The
   ## the nodes selected are filtered by provided `enrField`.
   d.randomNodes(maxAmount, proc(x: Node): bool = x.record.contains(enrField))
@@ -963,7 +963,7 @@ proc revalidateNode*(d: Protocol, n: Node) {.async.} =
 
     # Get IP and port from pong message and add it to the ip votes
     trace "pong rx", n, myip = res.ip, myport = res.port
-    let a = Address(ip: ValidIpAddress.init(res.ip), port: Port(res.port))
+    let a = Address(ip: res.ip, port: Port(res.port))
     d.ipVote.insert(n.id, a)
 
 proc revalidateLoop(d: Protocol) {.async.} =
@@ -1076,7 +1076,7 @@ func init*(
 
 proc newProtocol*(
     privKey: PrivateKey,
-    enrIp: Option[ValidIpAddress],
+    enrIp: Option[IpAddress],
     enrTcpPort, enrUdpPort: Option[Port],
     localEnrFields: openArray[(string, seq[byte])] = [],
     bootstrapRecords: openArray[SignedPeerRecord] = [],

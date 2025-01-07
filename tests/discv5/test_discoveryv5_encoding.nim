@@ -9,7 +9,6 @@ import
   codexdht/discv5/[messages, messages_encoding, encoding, spr, node, sessions],
   codexdht/discv5/crypto,
   stew/byteutils,
-  stew/shims/net,
   stint,
   ../dht/test_helper
 
@@ -275,11 +274,11 @@ suite "Discovery v5.1 Packet Encodings Test Vectors":
 
     let
       enrRecA = SignedPeerRecord.init(1, privKeyA,
-        some(ValidIpAddress.init("127.0.0.1")), some(Port(9001)),
+        some(parseIpAddress("127.0.0.1")), some(Port(9001)),
         some(Port(9001))).expect("Properly intialized private key")
 
       enrRecB = SignedPeerRecord.init(1, privKeyB,
-        some(ValidIpAddress.init("127.0.0.1")), some(Port(9001)),
+        some(parseIpAddress("127.0.0.1")), some(Port(9001)),
         some(Port(9001))).expect("Properly intialized private key")
 
     nodeA = newNode(enrRecA).expect("Properly initialized record")
@@ -508,11 +507,11 @@ suite "Discovery v5.1 Additional Encode/Decode":
 
     let
       enrRecA = SignedPeerRecord.init(1, privKeyA,
-        some(ValidIpAddress.init("127.0.0.1")), some(Port(9001)),
+        some(parseIpAddress("127.0.0.1")), some(Port(9001)),
         some(Port(9001))).expect("Properly intialized private key")
 
       enrRecB = SignedPeerRecord.init(1, privKeyB,
-        some(ValidIpAddress.init("127.0.0.1")), some(Port(9001)),
+        some(parseIpAddress("127.0.0.1")), some(Port(9001)),
         some(Port(9001))).expect("Properly intialized private key")
 
     nodeA = newNode(enrRecA).expect("Properly initialized record")

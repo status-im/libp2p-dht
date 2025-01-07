@@ -58,7 +58,7 @@ proc incSeqNo*(
 proc update*(
   r: var SignedPeerRecord,
   pk: crypto.PrivateKey,
-  ip: Option[ValidIpAddress],
+  ip: Option[IpAddress],
   tcpPort, udpPort: Option[Port] = none[Port]()):
   RecordResult[void] =
   ## Update a `SignedPeerRecord` with given ip address, tcp port, udp port and optional
@@ -97,9 +97,8 @@ proc update*(
     if udpPort.isNone and tcpPort.isNone:
       return err "No existing address in SignedPeerRecord with no port provided"
 
-    let ipAddr = try: ValidIpAddress.init(ip.get)
-                 except ValueError as e:
-                   return err ("Existing address contains invalid address: " & $e.msg).cstring
+    let ipAddr = ip.get
+   
     if tcpPort.isSome:
       transProto = IpTransportProtocol.tcpProtocol
       transProtoPort = tcpPort.get
@@ -223,7 +222,7 @@ proc init*(
   T: type SignedPeerRecord,
   seqNum: uint64,
   pk: PrivateKey,
-  ip: Option[ValidIpAddress],
+  ip: Option[IpAddress],
   tcpPort, udpPort: Option[Port]):
   RecordResult[T] =
   ## Initialize a `SignedPeerRecord` with given sequence number, private key, optional
@@ -238,9 +237,7 @@ proc init*(
       tcpPort, udpPort
 
   var
-    ipAddr = try: ValidIpAddress.init("127.0.0.1")
-             except ValueError as e:
-               return err ("Existing address contains invalid address: " & $e.msg).cstring
+    ipAddr = static parseIpAddress("127.0.0.1")
     proto: IpTransportProtocol
     protoPort: Port
 

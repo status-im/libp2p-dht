@@ -10,18 +10,15 @@
 {.used.}
 
 import
-  std/[options, sequtils],
+  std/[options],
   asynctest/chronos/unittest2,
   bearssl/rand,
   chronicles,
   chronos,
-  nimcrypto,
   libp2p/crypto/[crypto, secp],
   libp2p/[multiaddress, multicodec, multihash, routing_record, signed_envelope],
-  codexdht/dht,
   codexdht/discv5/crypto as dhtcrypto,
   codexdht/discv5/protocol as discv5_protocol,
-  stew/byteutils,
   test_helper
 
 proc bootstrapNodes(

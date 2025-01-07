@@ -6,7 +6,6 @@ import pkg/asynctest/chronos/unittest
 import pkg/datastore
 from pkg/libp2p import PeerId
 
-import codexdht/dht
 import codexdht/private/eth/p2p/discoveryv5/spr
 import codexdht/private/eth/p2p/discoveryv5/providers
 import codexdht/discv5/node

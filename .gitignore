@@ -13,3 +13,4 @@ NimBinaries
 .update.timestamp
 *.dSYM
 .vscode/*
+nimbledeps

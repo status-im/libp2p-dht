@@ -4,14 +4,10 @@ import
   libp2p/crypto/[crypto, secp],
   libp2p/multiaddress,
   codexdht/discv5/[node, routing_table, spr],
-  codexdht/discv5/crypto as dhtcrypto,
-  codexdht/discv5/protocol as discv5_protocol,
-  stew/shims/net
-
-export net
+  codexdht/discv5/protocol as discv5_protocol
 
 proc localAddress*(port: int): Address =
-  Address(ip: ValidIpAddress.init("127.0.0.1"), port: Port(port))
+  Address(ip: parseIpAddress("127.0.0.1"), port: Port(port))
 
 proc example*(T: type PrivateKey, rng: ref HmacDrbgContext): PrivateKey =
   PrivateKey.random(PKScheme.Secp256k1, rng[]).expect("Valid rng for private key")
@@ -54,7 +50,7 @@ proc nodeIdInNodes*(id: NodeId, nodes: openArray[Node]): bool =
     if id == n.id: return true
 
 proc generateNode*(privKey: PrivateKey, port: int,
-    ip: ValidIpAddress = ValidIpAddress.init("127.0.0.1")): Node =
+    ip: IpAddress = parseIpAddress("127.0.0.1")): Node =
 
   let
     port = Port(port)
@@ -72,7 +68,7 @@ proc generateNRandomNodes*(rng: ref HmacDrbgContext, n: int): seq[Node] =
   res
 
 proc nodeAndPrivKeyAtDistance*(n: Node, rng: var HmacDrbgContext, d: uint32,
-    ip: ValidIpAddress = ValidIpAddress.init("127.0.0.1")): (Node, PrivateKey) =
+    ip: IpAddress = parseIpAddress("127.0.0.1")): (Node, PrivateKey) =
   while true:
     let
       privKey = PrivateKey.random(rng).expect("Valid rng for private key")
@@ -81,23 +77,23 @@ proc nodeAndPrivKeyAtDistance*(n: Node, rng: var HmacDrbgContext, d: uint32,
       return (node, privKey)
 
 proc nodeAtDistance*(n: Node, rng: var HmacDrbgContext, d: uint32,
-    ip: ValidIpAddress = ValidIpAddress.init("127.0.0.1")): Node =
+    ip: IpAddress = parseIpAddress("127.0.0.1")): Node =
   let (node, _) = n.nodeAndPrivKeyAtDistance(rng, d, ip)
   node
 
 proc nodesAtDistance*(
     n: Node, rng: var HmacDrbgContext, d: uint32, amount: int,
-    ip: ValidIpAddress = ValidIpAddress.init("127.0.0.1")): seq[Node] =
+    ip: IpAddress = parseIpAddress("127.0.0.1")): seq[Node] =
   for i in 0..<amount:
     result.add(nodeAtDistance(n, rng, d, ip))
 
 proc nodesAtDistanceUniqueIp*(
     n: Node, rng: var HmacDrbgContext, d: uint32, amount: int,
-    ip: ValidIpAddress = ValidIpAddress.init("127.0.0.1")): seq[Node] =
+    ip: IpAddress = parseIpAddress("127.0.0.1")): seq[Node] =
   var ta = initTAddress(ip, Port(0))
   for i in 0..<amount:
     ta.inc()
-    result.add(nodeAtDistance(n, rng, d, ValidIpAddress.init(ta.address())))
+    result.add(nodeAtDistance(n, rng, d, ta.address()))
 
 proc addSeenNode*(d: discv5_protocol.Protocol, n: Node): bool =
   # Add it as a seen node, warning: for testing convenience only!

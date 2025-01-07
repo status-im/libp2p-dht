@@ -259,7 +259,7 @@ proc processClient[T](transp: DatagramTransport, raddr: TransportAddress):
            except ValueError as e:
              error "Not a valid IpAddress", exception = e.name, msg = e.msg
              return
-  let a = Address(ip: ValidIpAddress.init(ip), port: raddr.port)
+  let a = Address(ip: ip, port: raddr.port)
 
   t.receive(a, buf)
 
@@ -292,7 +292,7 @@ proc newTransport*[T](
 
   Transport[T](
     client: client,
-    bindAddress: Address(ip: ValidIpAddress.init(bindIp), port: bindPort),
+    bindAddress: Address(ip: bindIp, port: bindPort),
     codec: Codec(
       localNode: localNode,
       privKey: privKey,

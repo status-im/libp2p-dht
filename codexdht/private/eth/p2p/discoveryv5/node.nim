@@ -28,7 +28,7 @@ type
   NodeId* = UInt256
 
   Address* = object
-    ip*: ValidIpAddress
+    ip*: IpAddress
     port*: Port
 
   Stats* = object
@@ -69,7 +69,7 @@ func newNode*(
       id: ? pk.toNodeId(),
       pubkey: pk,
       record: record,
-      address: Address(ip: ValidIpAddress.init(ip), port: port).some)
+      address: Address(ip: ip, port: port).some)
 
   ok node
 
@@ -103,7 +103,7 @@ func newNode*(r: SignedPeerRecord): Result[Node, cstring] =
       record: r,
       address: none(Address)))
 
-proc update*(n: Node, pk: PrivateKey, ip: Option[ValidIpAddress],
+proc update*(n: Node, pk: PrivateKey, ip: Option[IpAddress],
     tcpPort, udpPort: Option[Port] = none[Port]()): Result[void, cstring] =
   ? n.record.update(pk, ip, tcpPort, udpPort)
 
@@ -154,7 +154,7 @@ func shortLog*(id: NodeId): string =
       result.add(sid[i])
 chronicles.formatIt(NodeId): shortLog(it)
 
-func hash*(ip: ValidIpAddress): Hash =
+func hash*(ip: IpAddress): Hash =
   case ip.family
   of IpAddressFamily.IPv6: hash(ip.address_v6)
   of IpAddressFamily.IPv4: hash(ip.address_v4)
